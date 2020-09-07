@@ -1,0 +1,848 @@
+# Template
+snippet temp
+	#include <bits/stdc++.h>
+	using namespace std;
+
+	int main() {
+		ios::sync_with_stdio(0);
+		cout.tie(0);
+		cin.tie(0);
+
+		${0}
+	}
+# Aho Corasick
+snippet ahoc
+	struct ahoc {
+		int sz = 0;
+		vector<int> len, sl, el;
+		vector<vector<int>> to;
+
+		ahoc(int n2, int m2) {
+			to.resize(n2, vector<int> (m2, 0));
+			len.resize(n2, 0);
+			sl.resize(n2, 0);
+			el.resize(n2, 0);
+		}
+
+		void insert(string s) {
+			int u = 0;
+			for (auto c : s) {
+				if (!to[u][c - 'a']) to[u][c - 'a'] = ++sz;
+				u = to[u][c - 'a'];
+			}
+			el[u] = u;
+		}
+
+		void push_links() {
+			queue<int> q;
+			q.push(0);
+			while (q.size()) {
+				int u = q.front(); q.pop();
+				for (int i = 0; i < (int)to[0].size(); ++i) {
+					if (to[u][i]) {
+						int v = to[u][i];
+						len[v] = len[u] + 1;
+						sl[v] = u ? to[sl[u]][i] : 0;
+						if (!el[v]) el[v] = el[sl[v]];
+						q.push(v);
+					} else 
+						to[u][i] = to[sl[u]][i];
+				}
+			}
+		}
+	};
+
+# Custom Hash
+snippet custom_hash
+	struct custom_hash {
+			static uint64_t splitmix64(uint64_t x) {
+					// http://xorshift.di.unimi.it/splitmix64.c
+					x += 0x9e3779b97f4a7c15;
+					x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+					x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+					return x ^ (x >> 31);
+			}
+
+			size_t operator()(uint64_t x) const {
+					static const uint64_t FIXED_RANDOM = chrono::steady_clock::now().time_since_epoch().count();
+					return splitmix64(x + FIXED_RANDOM);
+			}
+	};
+
+# Dijkstra
+snippet dstra
+	using pli = pair<long long, int>;
+	long long dijkstra(vector<long long> &dt, int src = 0, int dest = -1) {
+		
+		dt.assign(g.size(), 1e17);
+		dt[src] = 0;
+
+		priority_queue<pli, vector<pli>, greater<pli>> q;
+		q.push({0ll, src});
+
+		while (q.size()) {
+			int u = q.top().second;
+			long long du = q.top().first;
+			q.pop();
+
+			if (u == dest)  return dt[u];
+			if (du > dt[u]) continue;
+			for (auto x : g[u]) {
+				int to = x.first;
+				long long w = x.second;
+
+				if (w + du >= dt[to])  continue;
+				dt[to] = w + du;
+				q.push({dt[to], to});
+			}
+		}
+		return 0;
+	}
+
+# Dinic Flow Algortihm
+snippet dinic
+	struct FlowEdge {
+			int v, u;
+			long long cap, flow = 0;
+			FlowEdge(int _v, int _u, long long _cap) : v(_v), u(_u), cap(_cap) {}
+	};
+
+	struct Dinic {
+			const long long flow_inf = 1e18;
+			vector<FlowEdge> edges;
+			vector<vector<int>> adj;
+			int n, m = 0;
+			int s, t;
+			vector<int> level, ptr;
+			queue<int> q;
+
+			Dinic(int _n, int _s, int _t) : n(_n), s(_s), t(_t) {
+					adj.resize(n);
+					level.resize(n);
+					ptr.resize(n);
+			}
+
+			void add_edge(int v, int u, long long cap) {
+					edges.emplace_back(v, u, cap);
+					edges.emplace_back(u, v, 0);
+					adj[v].push_back(m);
+					adj[u].push_back(m + 1);
+					m += 2;
+			}
+
+			bool bfs() {
+					while (!q.empty()) {
+							int v = q.front();
+							q.pop();
+							for (int id : adj[v]) {
+									if (edges[id].cap - edges[id].flow < 1)
+											continue;
+									if (level[edges[id].u] != -1)
+											continue;
+									level[edges[id].u] = level[v] + 1;
+									q.push(edges[id].u);
+							}
+					}
+					return level[t] != -1;
+			}
+
+			long long dfs(int v, long long pushed) {
+					if (pushed == 0)
+							return 0;
+					if (v == t)
+							return pushed;
+					for (int& cid = ptr[v]; cid < (int)adj[v].size(); cid++) {
+							int id = adj[v][cid];
+							int u = edges[id].u;
+							if (level[v] + 1 != level[u] || edges[id].cap - edges[id].flow < 1)
+									continue;
+							long long tr = dfs(u, min(pushed, edges[id].cap - edges[id].flow));
+							if (tr == 0)
+									continue;
+							edges[id].flow += tr;
+							edges[id ^ 1].flow -= tr;
+							return tr;
+					}
+					return 0;
+			}
+
+			long long flow() {
+					long long f = 0;
+					while (true) {
+							fill(level.begin(), level.end(), -1);
+							level[s] = 0;
+							q.push(s);
+							if (!bfs())
+									break;
+							fill(ptr.begin(), ptr.end(), 0);
+							while (long long pushed = dfs(s, flow_inf)) {
+									f += pushed;
+							}
+					}
+					return f;
+			}
+	};
+
+# Discrete Logarithm
+snippet dlog
+	int discreteLog(int a, int b, int m)
+	{
+		a %= m, b %= m;
+		if(b == 1)
+			return 0;
+		int cnt = 0;
+		long long t = 1;
+		for(int curg=__gcd(a, m);curg!=1;curg=__gcd(a, m))
+		{
+			if(b % curg)
+				return -1;
+			b /= curg, m /= curg, t = (t * a / curg) % m;
+			cnt++;
+			if(b == t)
+				return cnt;
+		}
+
+		gp_hash_table<int, int, custom_hash> hash;
+		int mid = ((int)sqrt(1.0 * m) + 1);
+		long long base = b;
+		for(int i=0;i<mid;i++)
+		{
+			hash[base] = i;
+			base = base * a % m;
+		}
+
+		base = pwr(a, mid, m);
+		long long cur = t;
+		for(int i=1;i<=mid+1;i++)
+		{
+			cur = cur * base % m;
+			auto it = hash.find(cur);
+			if(it != hash.end())
+				return i * mid - it->second + cnt;
+		}
+		return -1;
+	}
+
+# Disjoint Set Union
+snippet dsu
+	struct dsu {
+		int N;
+		vector<int> par, sz;
+
+		dsu(int n) : N(n + 5) {
+			par.resize(N);
+			sz.assign(N, 1);
+			iota(par.begin(), par.end(), 0);
+		}
+
+		int root(int x) {
+			if (par[x] == x)	return x;
+			return par[x] = root(par[x]);
+		}
+
+		void join(int x, int y) {
+			int px = root(x) , py = root(y);
+			if (sz[px] < sz[py])
+				swap(px, py);
+
+			par[py] = px;
+			sz[px] += sz[py];
+		}
+	};
+
+# Fenwick Tree
+snippet ftree
+	struct ftree {
+		vector<int> bit;
+		ftree (int _n) {
+			bit.assign(_n + 5, 0);
+		}
+
+		void update(int x, int val) {
+			while (x < (int)bit.size()) {
+				bit[x] += val;
+				x += x&-x;
+			}
+		}
+
+		int query(int x) {
+			int ret=0;
+			while (x > 0) {
+				ret += bit[x];
+				x -= x&-x;
+			}
+			return ret;
+		}
+	};
+
+# Fibonacci Series
+snippet fibonacci
+	map<long long, long long> fmap;
+	long long fib(long long n) { 
+			if (n == 0) return 0; 
+			if (n == 1 || n == 2) return (fmap[n] = 1); 
+		
+			if (fmap.count(n))   return fmap[n];
+			long long k = (n + 1) / 2; 
+		
+			// Take mod if required
+			fmap[n] = (n & 1) ? (fib(k) * fib(k) + fib(k-1) * fib(k-1)) 
+						 : (2 * fib(k-1) + fib(k)) * fib(k); 
+
+			//fmap[n] %= M;
+			return fmap[n];
+	}
+
+# Kuhn's Maximum Bipartite Matching
+snippet mbm
+	bool kuhn(int x, vector<int> &mch, vector<int> &used) {
+		if (used[x] == timer)	return 0;
+		used[x] = timer;
+
+		for (auto i : g[x]) {
+			if (mch[i] == -1) {
+				mch[i] = x;
+				return 1;
+			}
+		}
+
+		for (auto i : g[x]) {
+			if (kuhn(mch[i], mch, used)) {
+				mch[i] = x;
+				return 1;
+			}
+		}
+		return 0;
+	}
+
+# Lowest Common Ancestor
+snippet lca
+	struct LCA {
+			vector<int> height, euler, first, segtree;
+			vector<bool> visited;
+			int n;
+
+			LCA(vector<vector<int>> &adj, int root = 0) {
+					n = adj.size();
+					height.resize(n);
+					first.resize(n);
+					euler.reserve(n * 2);
+					visited.assign(n, false);
+					dfs(adj, root);
+					int m = euler.size();
+					segtree.resize(m * 4);
+					build(1, 0, m - 1);
+			}
+
+			void dfs(vector<vector<int>> &adj, int node, int h = 0) {
+					visited[node] = true;
+					height[node] = h;
+					first[node] = euler.size();
+					euler.push_back(node);
+					for (auto to : adj[node]) {
+							if (!visited[to]) {
+									dfs(adj, to, h + 1);
+									euler.push_back(node);
+							}
+					}
+			}
+
+			void build(int node, int b, int e) {
+					if (b == e) {
+							segtree[node] = euler[b];
+					} else {
+							int mid = (b + e) / 2;
+							build(node << 1, b, mid);
+							build(node << 1 | 1, mid + 1, e);
+							int l = segtree[node << 1], r = segtree[node << 1 | 1];
+							segtree[node] = (height[l] < height[r]) ? l : r;
+					}
+			}
+
+			int query(int node, int b, int e, int L, int R) {
+					if (b > R || e < L)
+							return -1;
+					if (b >= L && e <= R)
+							return segtree[node];
+					int mid = (b + e) >> 1;
+
+					int left = query(node << 1, b, mid, L, R);
+					int right = query(node << 1 | 1, mid + 1, e, L, R);
+					if (left == -1) return right;
+					if (right == -1) return left;
+					return height[left] < height[right] ? left : right;
+			}
+
+			int lca(int u, int v) {
+					int left = first[u], right = first[v];
+					if (left > right)
+							swap(left, right);
+					return query(1, 0, euler.size() - 1, left, right);
+			}
+	};
+		
+# LCA Binary
+snippet lcabinary
+	int n, l;
+	vector<vector<int>> adj;
+
+	int timer;
+	vector<int> tin, tout;
+	vector<vector<int>> up;
+
+	void dfs(int v, int p)
+	{
+			tin[v] = ++timer;
+			up[v][0] = p;
+			for (int i = 1; i <= l; ++i)
+					up[v][i] = up[up[v][i-1]][i-1];
+
+			for (int u : adj[v]) {
+					if (u != p)
+							dfs(u, v);
+			}
+
+			tout[v] = ++timer;
+	}
+
+	bool is_ancestor(int u, int v)
+	{
+			return tin[u] <= tin[v] && tout[u] >= tout[v];
+	}
+
+	int lca(int u, int v)
+	{
+			if (is_ancestor(u, v))
+					return u;
+			if (is_ancestor(v, u))
+					return v;
+			for (int i = l; i >= 0; --i) {
+					if (!is_ancestor(up[u][i], v))
+							u = up[u][i];
+			}
+			return up[u][0];
+	}
+
+	void preprocess(int root) {
+			tin.resize(n);
+			tout.resize(n);
+			timer = 0;
+			l = ceil(log2(n));
+			up.assign(n, vector<int>(l + 1));
+			dfs(root, root);
+	}
+
+# Matrix Operations
+snippet matrix
+	using mat = vector<vector<long long>>;
+
+	mat operator*(const mat &A, const mat &B) {
+		mat ret(A.size(), vector<long long> (B[0].size()));
+
+		for (int i = 0; i < (int)A.size(); ++i) {
+			for (int j = 0; j < (int)B[0].size(); ++j) {
+				for (int k = 0; k < (int)A[0].size(); ++k) {
+					ret[i][j] = (ret[i][j] + A[i][k] * B[k][j] % M) % M;
+				}  
+			}
+		}
+		return ret;
+	}
+
+	mat pwr(const mat &A, long long b) {
+		mat ret = A, tmp = A;
+		for (int i = 0; i < (int)A.size(); ++i) {
+			for (int j = 0; j < (int)A[0].size(); ++j) {
+				ret[i][j] = (i == j);
+			}
+		}
+
+		for (; b > 0; b >>= 1) {
+			if (b&1) ret = ret * tmp;
+			tmp = tmp * tmp;
+		}
+		return ret;
+	}
+
+# Modular Class
+snippet modular
+	template <int MOD=1000000007>
+	struct Modular {
+		int value;
+		static const int MOD_value = MOD;
+
+		Modular(long long v = 0) { value = v % MOD; if (value < 0) value += MOD;}
+		Modular(long long a, long long b) : value(0){ *this += a; *this /= b;}
+
+		Modular& operator+=(Modular const& b) {value += b.value; if (value >= MOD) value -= MOD; return *this;}
+		Modular& operator-=(Modular const& b) {value -= b.value; if (value < 0) value += MOD;return *this;}
+		Modular& operator*=(Modular const& b) {value = (long long)value * b.value % MOD;return *this;}
+
+		friend Modular mexp(Modular a, long long e) {
+			Modular res = 1; while (e) { if (e&1) res *= a; a *= a; e >>= 1; }
+			return res;
+		}
+
+		friend Modular inverse(Modular b, long long m = MOD) {
+			long long u = 0, v = 1, a = b.value;
+			while (a != 0) {
+				long long t = m / a;
+				m -= t * a; swap(a, m);
+				u -= t * v; swap(u, v);
+			}
+			return Modular(u);
+		}
+
+		Modular& operator/=(Modular const& b) { return *this *= inverse(b); }
+		friend Modular operator+(Modular a, Modular const b) { return a += b; }
+		friend Modular operator-(Modular a, Modular const b) { return a -= b; }
+		friend Modular operator-(Modular const a) { return 0 - a; }
+		friend Modular operator*(Modular a, Modular const b) { return a *= b; }
+		friend Modular operator/(Modular a, Modular const b) { return a /= b; }
+		friend std::ostream& operator<<(std::ostream& os, Modular const& a) {return os << a.value;}
+		friend bool operator==(Modular const& a, Modular const& b) {return a.value == b.value;}
+		friend bool operator!=(Modular const& a, Modular const& b) {return a.value != b.value;}
+	};
+	using mint = Modular<>;
+
+# Policy Based Data Structures
+snippet pbds
+	#include <ext/pb_ds/assoc_container.hpp> // Common file
+	#include <ext/pb_ds/tree_policy.hpp> // Including tree_order_statistics_node_update
+	using namespace __gnu_pbds;  
+
+	typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> oset;
+	//typedef tree<pair<int, int>, null_type, less<pair<int, int>>, rb_tree_tag, tree_order_statistics_node_update> omset;
+	//order_of_key: The number of items in a set that are strictly smaller than k
+	//find_by_order: It returns an iterator to the ith largest element
+
+# Binary Exponentiation
+snippet pwr
+	long long pwr(long long a, long long b, long long m = M) {
+		long long ret = 1;
+
+		while (b > 0) {
+			if (b & 1)	ret = ret * a % m;
+			a = a * a % m;
+			b >>= 1;
+		}
+		return ret;
+	}
+
+# Prefix Function
+snippet prefixfunction
+	vector<int> prefix_function(string s) {
+			int n = (int)s.size();
+			vector<int> pi(n);
+			for (int i = 1; i < n; i++) {
+					int j = pi[i-1];
+					while (j > 0 && s[i] != s[j])
+							j = pi[j-1];
+					if (s[i] == s[j])
+							j++;
+					pi[i] = j;
+			}
+			return pi;
+	}
+
+# Random Generator
+snippet rangen
+	mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+
+# Segment Tree
+snippet segtree
+	template <typename T>
+	struct segtree {
+
+		vector<T> seg, lazy;
+		segtree(int n = 1e5) {
+			n += 5;
+			seg.resize(4*n, 0);
+			lazy.resize(4*n, 0);
+		}
+
+		T join(T x, T y) {
+
+			return x + y;
+		}
+
+		void lazy_update(int x, int s, int e) {
+			if (!lazy[x])	return ;
+			seg[x] += lazy[x];
+
+			if (s != e)
+				lazy[2*x] += lazy[x], lazy[2*x+1] += lazy[x];
+			lazy[x] = 0;
+		}
+
+		void build(int x, int s, int e) {
+			if (s == e) {
+				seg[x] = 0;
+				return; 
+			}
+
+			int mid = (s + e) >> 1;
+			build(2 * x, s, mid);
+			build(2 * x + 1, mid + 1, e);
+
+			seg[x] = join(seg[2*x], seg[2*x+1]);
+		}
+
+		void update(int x, int s, int e, int l, int r, T val) {
+			lazy_update(x, s, e);
+			if (s > r || e < l)	return ;
+
+			if (s >= l && e <= r) {
+				lazy[x] += val;
+				lazy_update(x, s, e);
+				return;
+			}
+
+			int mid = (s + e) >> 1;
+			update(2 * x, s, mid, l, r, val);
+			update(2 * x + 1, mid + 1, e, l, r, val);
+
+			seg[x] = join(seg[2 * x], seg[2 * x + 1]);
+		}
+
+		T query(int x, int s, int e, int l, int r) {
+			lazy_update(x, s, e);
+			if (e < l || s > r)	return 0;
+			if (s >= l && e <= r){
+				return seg[x];
+			}
+
+			int mid = (s + e) >> 1;
+			return join(query(2 * x, s, mid, l, r), query(2 * x + 1, mid + 1, e, l, r));
+		}
+	};
+
+
+# Testcases Case #i : answer
+snippet tcase
+	int tc;
+	cin >> tc;
+		
+	for (int ii = 1; ii <= tc; ++ii) {
+		cout << "Case #" << ii <<  ": ";
+	
+		${1}
+
+	}
+# Time Taken
+snippet cstime
+	double start = clock();
+snippet cetime
+	cerr << "\nTime Taken : " << ((double)clock() - start) / CLOCKS_PER_SEC << '\n';
+# TestCases
+snippet tint
+	int tc;
+	cin >> tc;
+
+	while (tc--) {
+		${0}
+	}
+# 2 Sat
+snippet 2sat
+	vector<vector<int>> g, gt;
+	vector<int> comp, vis, ord;
+	int cnt = 0;
+
+	void dfs(int x) {
+		vis[x] = 1;
+		for (auto v : g[x]) {
+			if (!vis[v])
+				dfs(v);
+		}
+		ord.push_back(x);
+	}
+
+	void dfs2(int x, int c) {
+		comp[x] = c;
+		for (auto v : gt[x]) {
+			if (comp[v] == -1)
+				dfs2(v, c);
+		}
+	}
+
+	vector<int> sat2() {
+		for (int i = 0; i < (int)g.size(); ++i) {
+			if (!vis[i]) dfs(i);
+		}
+		for (int i = ord.size() - 1, c = 0; i >= 0; --i) {
+			if (comp[ord[i]] == -1) 
+				dfs2(ord[i], c++);
+		}
+		vector<int> ret(g.size() / 2);
+		for (int i = 0; i < (int)g.size(); i += 2) {
+			if (comp[i] == comp[i + 1]) return vector<int> ();
+			ret[i/2] = (comp[i] > comp[i + 1]);
+			cnt += ret[i/2];
+		}
+		return ret;
+	}
+# Suffix Array
+snippet sarray
+	void suffix_array(string &s, vector<int> &p, vector<int> &c) {
+		s += '0';
+		int n = s.size(), k = 0;
+		vector<int> cn(n);
+		p.resize(n);
+		c.resize(n);
+		iota(p.begin(), p.end(), 0);
+		sort(p.begin(), p.end(), [&](int i, int j) {
+				return s[i] < s[j];
+		});
+		
+		for (int i = 1; i < n; ++i) {
+			c[p[i]] = c[p[i-1]] + (s[p[i]] != s[p[i-1]]);
+		}
+		
+		auto count_sort = [&](vector<int> &p, vector<int> &c) {
+			vector<int> pos(n, 0), pn(n);
+			for (auto i : c) pos[i]++;
+			for (int i = 0; i < n; ++i) pn[i] = (p[i] - (1<<k) + n) % n;
+			for (int i = 1; i < n; ++i) pos[i] += pos[i - 1];
+			for (int i = n - 1; i >= 0; --i) p[--pos[c[pn[i]]]] = pn[i];
+		};
+		
+		while ((1<<k) < n) {
+			count_sort(p, c);
+			cn[p[0]] = 0;
+			for (int i = 1; i < n; ++i) {
+				pair<int, int> prev = {c[p[i-1]], c[(p[i-1] + (1<<k))%n]}, cur = {c[p[i]], c[(p[i] + (1<<k))%n]};
+				cn[p[i]] = cn[p[i-1]] + (prev != cur);
+			}
+			++k;
+			c.swap(cn);
+			if (c[p.back()] == n - 1) break;
+		}
+	}
+# LCP
+snippet lcp
+	int n = s.size(), l = ceil(log2(n));
+	lcp.resize(n, vector<int> (l + 1, 0));
+	for (int i = 0, k = 0; i < n - 1; ++i) {
+		int j = p[c[i] - 1];
+		while (s[i + k] == s[j + k]) ++k;
+		lcp[c[i] - 1][0] = k;
+		k = max(k - 1, 0);
+	}
+
+	for (int i = 1; i <= l; ++i) {
+		for (int j = 1; j + (1<<(i-1)) < n - 1; ++j) {
+			lcp[j][i] = min(lcp[j][i - 1], lcp[j + (1<<(i-1))][i - 1]);
+		}
+	}
+
+	auto lc = [&](int i, int j) {
+		int len = log2(j - i + 1);
+		return min(lcp[i][len], lcp[j - (1<<len) + 1][len]);
+	};
+# Int to LL
+snippet ill
+	#define int long long
+# Mod = 1e9 + 7
+snippet mod1
+	const int M = 1e9 + 7;
+# Mod = 998244353
+snippet mod2
+	const int M = 998244353;
+# Stress Test
+snippet stresst
+	@echo off
+
+	set i = 0
+	:loop
+		_gen %i% > in
+		 < in > sol-out
+		_brute < in > brute-out
+
+		fc sol-out brute-out
+		if errorlevel 1 goto fail
+
+		echo Ok
+		set /a i = %i%+1
+		goto loop
+
+	:fail
+		echo Wrong Answer!!!
+# String Hashs
+snippet hasher
+	struct hasher {
+		int P, MOD;
+		vector<int> hashs, pows;
+
+		hasher(vector<int> &s, int P, int MOD) : P(P), MOD(MOD) {
+			int n = s.size();
+			pows.resize(n + 1, 0);
+			hashs.resize(n + 1, 0);
+			pows[0] = 1;
+
+			for(int i = n - 1; i >= 0; i--) {
+				hashs[i] = (1LL * hashs[i + 1] * P + s[i] - 'a' + 1) % MOD;
+				pows[n - i] = (1LL * pows[n - i - 1] * P) % MOD;
+			}
+			pows[n] = (1LL * pows[n - 1] * P) % MOD;
+		}
+
+		int get_hash(int l, int r) {
+			int ans = hashs[l] + MOD - (1LL * hashs[r + 1] * pows[r - l + 1]) % MOD;
+			ans %= MOD;
+			return ans;
+		}
+	};
+# Modular inverse
+snippet inverse
+	int inverse(int a, int b = M) {
+		return a > 1 ? b - inverse(b%a, a)*b/a : 1;
+	}
+
+# NTT
+snippet ntt
+	void ntt(vector<mint> &a, bool invert) {
+		int n = a.size();
+
+		for (int i = 1, j = 0, bit; i < n; i++) {
+			for (bit = n>>1; j&bit; bit >>= 1)
+				j ^= bit;
+			j ^= bit;
+
+			if (i < j) swap(a[i], a[j]);
+		}
+
+		for (int len = 2; len <= n; len <<= 1) {
+			int wlen = pwr(3, (M-1)/len);
+			if (invert) wlen = pwr(wlen, M-2);
+
+			for (int i = 0; i < n; i += len) {
+				mint w = 1;
+				for (int j = 0; j < len / 2; j++) {
+					mint u = a[i+j], v = a[i+j+len/2] * w;
+					a[i+j] = u + v;
+					a[i+j+len/2] = u - v;
+					w *= wlen;
+				}
+			}
+		}
+
+		if (invert) { 
+			for (mint &x : a) x /= n;
+		}
+	}
+
+# Modular factorial and inverse
+snippet modfac
+	vector<mint> fac, inv;
+	void initfac(int _n) {
+		fac.resize(_n, 1);
+		inv.resize(_n, 1);
+		for (int i = 1; i < _n; ++i) fac[i] = i * fac[i-1];
+		inv[_n-1] = mint(1, fac[_n-1].value);
+		for (int i = _n-2; i >= 0; --i) inv[i] = (i+1) * inv[i+1];
+	}
+
+	mint ncr(int na, int nb) {
+		if (!fac.size()) assert(false), initfac();
+		return fac[na] * inv[nb] * inv[na-nb];
+	}
