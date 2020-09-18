@@ -846,3 +846,35 @@ snippet modfac
 		if (!fac.size()) assert(false), initfac();
 		return fac[na] * inv[nb] * inv[na-nb];
 	}
+
+# Fast Walsh Hadamard Transform
+snippet fhwt
+	template <typename T>
+	void fhwt(vector<T> &a, bool inv) {
+		int n = a.size();
+		for (int len = 1; len < n; len <<= 1) {
+			for (int i = 0; i < n; i += 2*len) {
+				for (int j = 0; j < len; ++j) {
+					T u = a[i+j], v = a[i+j+len]; 
+					
+					if (!inv) {
+						a[i+j] = u + v; a[i+j+len] = u - v; // XOR
+						a[i+j] = v; a[i+j+len] = u + v; // AND
+						a[i+j] = u + v; a[i+j+len] = u; // OR
+					} else {
+						a[i+j] = (u + v) / 2; a[i+j+len] = (u - v) / 2; // XOR
+						a[i+j] = (-u + v); a[i+j+len] = u; // AND
+						a[i+j] = v; a[i+j+len] = u-v; // OR
+					}
+				}
+			}
+		}
+	}
+# Debug
+snippet debug
+	#ifdef LOCAL 
+	#include "e:/Codes/lib/prettyprint.hpp"
+	#else
+	#define debug(...) 
+	#endif
+
