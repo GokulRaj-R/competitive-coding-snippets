@@ -3,7 +3,7 @@ snippet temp
 	#include <bits/stdc++.h>
 	using namespace std;
 
-	int main() {
+	int32_t main() {
 		ios::sync_with_stdio(0);
 		cout.tie(0);
 		cin.tie(0);
@@ -553,12 +553,11 @@ snippet rangen
 snippet segtree
 	template <typename T>
 	struct segtree {
-
+		int N;
 		vector<T> seg, lazy;
-		segtree(int n = 1e5) {
-			n += 5;
-			seg.resize(4*n, 0);
-			lazy.resize(4*n, 0);
+		segtree(int n = 1e5) : N(n) {
+			seg.resize(4*N, 0);
+			lazy.resize(4*N, 0);
 		}
 
 		T join(T x, T y) {
@@ -615,6 +614,9 @@ snippet segtree
 			int mid = (s + e) >> 1;
 			return join(query(2 * x, s, mid, l, r), query(2 * x + 1, mid + 1, e, l, r));
 		}
+
+		void update(int l, int r, T val) { update(1, 0, N-1, l, r, val); }
+		T query(int l, int r) { return query(1, 0, N-1, l, r); }
 	};
 
 
