@@ -3,7 +3,7 @@ snippet temp
 	#include <bits/stdc++.h>
 	using namespace std;
 
-	int32_t main() {
+	int main() {
 		ios::sync_with_stdio(0);
 		cout.tie(0);
 		cin.tie(0);
@@ -242,6 +242,7 @@ snippet dsu
 
 		void join(int x, int y) {
 			int px = root(x) , py = root(y);
+			if (px == py) return ;
 			if (sz[px] < sz[py])
 				swap(px, py);
 
@@ -553,11 +554,12 @@ snippet rangen
 snippet segtree
 	template <typename T>
 	struct segtree {
-		int N;
+
 		vector<T> seg, lazy;
-		segtree(int n = 1e5) : N(n) {
-			seg.resize(4*N, 0);
-			lazy.resize(4*N, 0);
+		segtree(int n = 1e5) {
+			n += 5;
+			seg.resize(4*n, 0);
+			lazy.resize(4*n, 0);
 		}
 
 		T join(T x, T y) {
@@ -614,9 +616,6 @@ snippet segtree
 			int mid = (s + e) >> 1;
 			return join(query(2 * x, s, mid, l, r), query(2 * x + 1, mid + 1, e, l, r));
 		}
-
-		void update(int l, int r, T val) { update(1, 0, N-1, l, r, val); }
-		T query(int l, int r) { return query(1, 0, N-1, l, r); }
 	};
 
 
@@ -848,75 +847,3 @@ snippet modfac
 		if (!fac.size()) assert(false), initfac();
 		return fac[na] * inv[nb] * inv[na-nb];
 	}
-
-# Fast Walsh Hadamard Transform
-snippet fhwt
-	template <typename T>
-	void fhwt(vector<T> &a, bool inv) {
-		int n = a.size();
-		for (int len = 1; len < n; len <<= 1) {
-			for (int i = 0; i < n; i += 2*len) {
-				for (int j = 0; j < len; ++j) {
-					T u = a[i+j], v = a[i+j+len]; 
-					
-					if (!inv) {
-						a[i+j] = u + v; a[i+j+len] = u - v; // XOR
-						a[i+j] = v; a[i+j+len] = u + v; // AND
-						a[i+j] = u + v; a[i+j+len] = u; // OR
-					} else {
-						a[i+j] = (u + v) / 2; a[i+j+len] = (u - v) / 2; // XOR
-						a[i+j] = (-u + v); a[i+j+len] = u; // AND
-						a[i+j] = v; a[i+j+len] = u-v; // OR
-					}
-				}
-			}
-		}
-	}
-# Debug
-snippet debug
-	#ifdef LOCAL 
-	#include "e:/Codes/lib/prettyprint.hpp"
-	#else
-	#define debug(...) 
-	#endif
-# Dynamic modular class
-snippet dmodular 
-	vector<int> MODS = {int(1e9+7), 998244353};
-	template <int id>
-	struct Modular {
-		int value;
-		
-		static int MOD() {return MODS[id];}
-		Modular(long long v = 0) { value = v % MOD(); if (value < 0) value += MOD();}
-		Modular(long long a, long long b) : value(0) { *this += a; *this /= b;}
-
-		Modular& operator+=(Modular const& b) {value += b.value; if (value >= MOD()) value -= MOD(); return *this;}
-		Modular& operator-=(Modular const& b) {value -= b.value; if (value < 0) value += MOD();return *this;}
-		Modular& operator*=(Modular const& b) {value = (long long)value * b.value % MOD();return *this;}
-
-		friend Modular mexp(Modular a, long long e) {
-			Modular res = 1; while (e) { if (e&1) res *= a; a *= a; e >>= 1; }
-			return res;
-		}
-
-		friend Modular inverse(Modular b, long long m = MOD()) {
-			long long u = 0, v = 1, a = b.value;
-			while (a != 0) {
-				long long t = m / a;
-				m -= t * a; swap(a, m);
-				u -= t * v; swap(u, v);
-			}
-			return Modular(u);
-		}
-
-		Modular& operator/=(Modular const& b) { return *this *= inverse(b); }
-		friend Modular operator+(Modular a, Modular const b) { return a += b; }
-		friend Modular operator-(Modular a, Modular const b) { return a -= b; }
-		friend Modular operator-(Modular const a) { return 0 - a; }
-		friend Modular operator*(Modular a, Modular const b) { return a *= b; }
-		friend Modular operator/(Modular a, Modular const b) { return a /= b; }
-		friend std::ostream& operator<<(std::ostream& os, Modular const& a) {return os << a.value;}
-		friend bool operator==(Modular const& a, Modular const& b) {return a.value == b.value;}
-		friend bool operator!=(Modular const& a, Modular const& b) {return a.value != b.value;}
-	};
-	using mint = Modular<>;
