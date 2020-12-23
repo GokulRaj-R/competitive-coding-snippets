@@ -921,3 +921,37 @@ snippet dmodular
 		friend bool operator!=(Modular const& a, Modular const& b) {return a.value != b.value;}
 	};
 	using mint = Modular<>;
+
+# Centroid Decomposition
+snippet cdecomp
+	vector<int> sub, done;
+	void solve(int x) {
+	}
+
+	void getSize(int x, int p) {
+		sub[x] = 1;
+		for (auto v : g[x]) {
+			if (done[v] || v == p) continue;
+			getSize(v, x);
+			sub[x] += sub[v];
+		}
+	}
+
+	int centroid(int x, int p, int n) {
+		for (auto v : g[x]) {
+			if (done[v] || v == p) continue;
+			if (sub[v] > n/2) return centroid(v, x, n);
+		}
+		return x;
+	}
+
+	void decompose(int x) {
+		getSize(x, x);
+		int c = centroid(x, x, sub[x]);
+		solve(c);
+		done[c] = 1;
+		for (auto v : g[c]) {
+			if (!done[v]) decompose(v);
+		}
+	}
+
