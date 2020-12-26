@@ -3,7 +3,7 @@ snippet temp
 	#include <bits/stdc++.h>
 	using namespace std;
 
-	int32_t main() {
+	int main() {
 		ios::sync_with_stdio(0);
 		cout.tie(0);
 		cin.tie(0);
@@ -504,7 +504,7 @@ snippet modular
 		friend bool operator==(Modular const& a, Modular const& b) {return a.value == b.value;}
 		friend bool operator!=(Modular const& a, Modular const& b) {return a.value != b.value;}
 	};
-	using mint = Modular<>;
+	using mint = Modular<M>;
 
 # Policy Based Data Structures
 snippet pbds
@@ -742,9 +742,9 @@ snippet lcp
 		int len = log2(j - i + 1);
 		return min(lcp[i][len], lcp[j - (1<<len) + 1][len]);
 	};
-# Int to LL
-snippet ill
-	#define int long long
+# Type define long long as ll
+snippet tll
+	typedef long long ll
 # Mod = 1e9 + 7
 snippet mod1
 	const int M = 1e9 + 7;
