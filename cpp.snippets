@@ -744,7 +744,7 @@ snippet lcp
 	};
 # Type define long long as ll
 snippet tll
-	typedef long long ll
+	typedef long long ll;
 # Mod = 1e9 + 7
 snippet mod1
 	const int M = 1e9 + 7;
@@ -815,9 +815,8 @@ snippet ntt
 		}
 
 		for (int len = 2; len <= n; len <<= 1) {
-			int wlen = pwr(3, (M-1)/len);
-			if (invert) wlen = pwr(wlen, M-2);
-
+			mint wlen = mexp(mint(3), (M-1)/len);
+			if (invert) wlen = 1 / wlen;
 			for (int i = 0; i < n; i += len) {
 				mint w = 1;
 				for (int j = 0; j < len / 2; j++) {
@@ -954,4 +953,31 @@ snippet cdecomp
 			if (!done[v]) decompose(v);
 		}
 	}
+# Polynomial Multiplication using FFT
+snippet pmultiply
+	template <typename T> 
+	vector<T> multiply(vector<T> const& a, vector<T> const& b) {
+		vector<T> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+		int n = 1;
+		while (n < (int)a.size() + (int)b.size()) n <<= 1;
+		
+		if ((int)min(a.size(), b.size()) < 150) {
+			vector<T> ret(n, 0);
+			for (int i = 0; i < (int)a.size(); ++i) {
+				for (int j = 0; j < (int)b.size(); ++j) {
+					ret[i+j] += a[i] * b[j];
+				}
+			}
+			return ret;
+		}
 
+		fa.resize(n, 0);
+		fb.resize(n, 0);
+		ntt(fa, 0);
+		ntt(fb, 0);
+		for (int i = 0; i < n; ++i) fa[i] *= fb[i];
+		ntt(fa, 1);
+
+		return fa;
+	}
+#
