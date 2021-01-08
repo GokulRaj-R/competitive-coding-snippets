@@ -260,6 +260,7 @@ snippet ftree
 		}
 
 		void update(int x, int val) {
+			++x;
 			while (x < (int)bit.size()) {
 				bit[x] += val;
 				x += x&-x;
@@ -267,7 +268,7 @@ snippet ftree
 		}
 
 		int query(int x) {
-			int ret=0;
+			int ret=0; ++x;
 			while (x > 0) {
 				ret += bit[x];
 				x -= x&-x;
@@ -835,6 +836,7 @@ snippet ntt
 
 # Modular factorial and inverse
 snippet modfac
+	// Remember to initialize
 	vector<mint> fac, inv;
 	void initfac(int _n) {
 		fac.resize(_n, 1);
@@ -844,9 +846,14 @@ snippet modfac
 		for (int i = _n-2; i >= 0; --i) inv[i] = (i+1) * inv[i+1];
 	}
 
-	mint ncr(int na, int nb) {
-		if (!fac.size()) assert(false), initfac();
-		return fac[na] * inv[nb] * inv[na-nb];
+	mint ncr(int _n, int _r) {
+		if (_r < 0 || _r > _n) return 0;
+		return fac[_n] * inv[_r] * inv[_n-_r];
+	}
+	
+	mint npr(int _n, int _n) {
+		if (_r < 0 || _r > _n) return 0;
+		return fac[_n] * inv[_n-_r];
 	}
 
 # Fast Walsh Hadamard Transform
@@ -980,4 +987,9 @@ snippet pmultiply
 
 		return fa;
 	}
+# Direction Vector
+snippet dir4
+	int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+snippet dir8
+	int dx[] = {-1, -1, 0, 1, 1, 1, 0, -1}, dy[] = {0, 1, 1, 1, 0, -1, -1, -1};
 #
