@@ -851,7 +851,7 @@ snippet modfac
 		return fac[_n] * inv[_r] * inv[_n-_r];
 	}
 	
-	mint npr(int _n, int _n) {
+	mint npr(int _n, int _r) {
 		if (_r < 0 || _r > _n) return 0;
 		return fac[_n] * inv[_n-_r];
 	}
