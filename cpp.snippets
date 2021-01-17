@@ -127,7 +127,7 @@ snippet dinic
 			}
 
 			void add_edge(int v, int u, T cap, bool directed = true) {
-					g[v].push_back({u, g[u].size(), cap, 0});
+					g[v].push_back({u, (int)g[u].size(), cap, 0});
 					g[u].push_back({v, int(g[v].size()) - 1, directed ? 0 : cap, 0});
 			}
 
@@ -137,7 +137,7 @@ snippet dinic
 					if (flow == 0)
 							return 0;
 					T result = 0;
-					for (; lst[v] < g[v].size(); ++lst[v]) {
+					for (; lst[v] < (int)g[v].size(); ++lst[v]) {
 							edge& e = g[v][lst[v]];
 							if (d[e.u] != d[v] + 1)
 									continue;
@@ -190,6 +190,7 @@ snippet dinic
 					return res;
 			}
 	};
+
 # Discrete Logarithm
 snippet dlog
 	int discreteLog(int a, int b, int m)
