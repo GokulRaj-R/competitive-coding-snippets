@@ -12,7 +12,7 @@ snippet temp
 	}
 # Aho Corasick
 snippet ahoc
-	struct ahoc {
+	struct ahoc { /* {{{ */
 		int sz = 0;
 		vector<int> len, sl, el;
 		vector<vector<int>> to;
@@ -50,7 +50,7 @@ snippet ahoc
 				}
 			}
 		}
-	};
+	}; /* }}} */
 
 # Custom Hash
 snippet custom_hash
@@ -72,7 +72,7 @@ snippet custom_hash
 # Dijkstra
 snippet dstra
 	using pli = pair<long long, int>;
-	long long dijkstra(vector<long long> &dt, int src = 0, int dest = -1) {
+	long long dijkstra(vector<long long> &dt, int src = 0, int dest = -1) { /* {{{ */
 		
 		dt.assign(g.size(), 1e17);
 		dt[src] = 0;
@@ -97,12 +97,12 @@ snippet dstra
 			}
 		}
 		return 0;
-	}
+	} /* }}} */
 
 # Dinic Flow Algortihm
 snippet dinic
 	template<typename T>
-	struct dinic {
+	struct dinic { /* {{{ */
 			struct edge {
 					int u, rev;
 					T cap, flow;
@@ -189,11 +189,11 @@ snippet dinic
 							res[i] = (d[i] != -1);
 					return res;
 			}
-	};
+	}; /* }}} */
 
 # Discrete Logarithm
 snippet dlog
-	int discreteLog(int a, int b, int m)
+	int discreteLog(int a, int b, int m) /* {{{ */
 	{
 		a %= m, b %= m;
 		if(b == 1)
@@ -229,11 +229,11 @@ snippet dlog
 				return i * mid - it->second + cnt;
 		}
 		return -1;
-	}
+	} /* }}} */
 
 # Disjoint Set Union
 snippet dsu
-	struct dsu {
+	struct dsu { /* {{{ */
 		int N;
 		vector<int> par, sz;
 
@@ -257,11 +257,11 @@ snippet dsu
 			par[py] = px;
 			sz[px] += sz[py];
 		}
-	};
+	}; /* }}} */
 
 # Fenwick Tree
 snippet ftree
-	struct ftree {
+	struct ftree { /* {{{ */
 		vector<int> bit;
 		ftree (int _n) {
 			bit.assign(_n + 5, 0);
@@ -283,7 +283,7 @@ snippet ftree
 			}
 			return ret;
 		}
-	};
+	}; /* }}} */
 
 # Fibonacci Series
 snippet fibonacci
@@ -305,7 +305,7 @@ snippet fibonacci
 
 # Kuhn's Maximum Bipartite Matching
 snippet mbm
-	bool kuhn(int x, vector<int> &mch, vector<int> &used) {
+	bool kuhn(int x, vector<int> &mch, vector<int> &used) { /* {{{ */
 		if (used[x] == timer)	return 0;
 		used[x] = timer;
 
@@ -323,11 +323,11 @@ snippet mbm
 			}
 		}
 		return 0;
-	}
+	} /* }}} */
 
 # Lowest Common Ancestor
 snippet lca
-	struct LCA {
+	struct LCA { /* {{{ */
 			vector<int> height, euler, first, segtree;
 			vector<bool> visited;
 			int n;
@@ -389,7 +389,7 @@ snippet lca
 							swap(left, right);
 					return query(1, 0, euler.size() - 1, left, right);
 			}
-	};
+	}; /* }}} */
 		
 # LCA Binary
 snippet lcabinary
@@ -445,8 +445,7 @@ snippet lcabinary
 # Matrix Operations
 snippet matrix
 	using mat = vector<vector<long long>>;
-
-	mat operator*(const mat &A, const mat &B) {
+	mat operator*(const mat &A, const mat &B) { /* {{{ */
 		mat ret(A.size(), vector<long long> (B[0].size()));
 
 		for (int i = 0; i < (int)A.size(); ++i) {
@@ -472,12 +471,12 @@ snippet matrix
 			tmp = tmp * tmp;
 		}
 		return ret;
-	}
+	} /* }}} */
 
 # Modular Class
 snippet modular
 	template <int MOD=1000000007>
-	struct Modular {
+	struct Modular { /* {{{ */
 		int value;
 		static const int MOD_value = MOD;
 
@@ -512,7 +511,7 @@ snippet modular
 		friend std::ostream& operator<<(std::ostream& os, Modular const& a) {return os << a.value;}
 		friend bool operator==(Modular const& a, Modular const& b) {return a.value == b.value;}
 		friend bool operator!=(Modular const& a, Modular const& b) {return a.value != b.value;}
-	};
+	}; /* }}} */
 	using mint = Modular<M>;
 
 # Policy Based Data Structures
@@ -562,7 +561,7 @@ snippet rangen
 # Segment Tree
 snippet segtree
 	template <typename T>
-	struct segtree {
+	struct segtree { /* {{{ */
 		int N;
 		vector<T> seg, lazy;
 		segtree(int n = 1e5) : N(n) {
@@ -627,8 +626,7 @@ snippet segtree
 
 		void update(int l, int r, T val) { update(1, 0, N-1, l, r, val); }
 		T query(int l, int r) { return query(1, 0, N-1, l, r); }
-	};
-
+	}; /* }}} */
 
 # Testcases Case #i : answer
 snippet tcase
@@ -695,7 +693,7 @@ snippet 2sat
 	}
 # Suffix Array
 snippet sarray
-	void suffix_array(string &s, vector<int> &p, vector<int> &c) {
+	void suffix_array(string &s, vector<int> &p, vector<int> &c) { /* {{{ */
 		s += '0';
 		int n = s.size(), k = 0;
 		vector<int> cn(n);
@@ -729,7 +727,7 @@ snippet sarray
 			c.swap(cn);
 			if (c[p.back()] == n - 1) break;
 		}
-	}
+	} /* }}} */
 # LCP
 snippet lcp
 	int n = s.size(), l = ceil(log2(n));
@@ -812,7 +810,7 @@ snippet inverse
 
 # NTT
 snippet ntt
-	void ntt(vector<mint> &a, bool invert) {
+	void ntt(vector<mint> &a, bool invert) { /* {{{ */
 		int n = a.size();
 
 		for (int i = 1, j = 0, bit; i < n; i++) {
@@ -840,12 +838,12 @@ snippet ntt
 		if (invert) { 
 			for (mint &x : a) x /= n;
 		}
-	}
+	} /* }}} */
 
 # Modular factorial and inverse
 snippet modfac
 	vector<mint> fac, inv;
-	void initfac(int _n) {
+	void initfac(int _n) { /* {{{ */
 		fac.resize(_n, 1);
 		inv.resize(_n, 1);
 		for (int i = 1; i < _n; ++i) fac[i] = i * fac[i-1];
@@ -861,7 +859,7 @@ snippet modfac
 	mint npr(int _n, int _r) {
 		if (_r < 0 || _r > _n) return 0;
 		return fac[_n] * inv[_n-_r];
-	}
+	} /* }}} */
 
 # Fast Walsh Hadamard Transform
 snippet fhwt
@@ -897,7 +895,7 @@ snippet debug
 snippet dmodular 
 	vector<int> MODS = {int(1e9+7), 998244353};
 	template <int id>
-	struct Modular {
+	struct Modular { /* {{{ */
 		int value;
 		
 		static int MOD() {return MODS[id];}
@@ -932,7 +930,7 @@ snippet dmodular
 		friend std::ostream& operator<<(std::ostream& os, Modular const& a) {return os << a.value;}
 		friend bool operator==(Modular const& a, Modular const& b) {return a.value == b.value;}
 		friend bool operator!=(Modular const& a, Modular const& b) {return a.value != b.value;}
-	};
+	}; /* }}} */
 	using mint = Modular<>;
 
 # Centroid Decomposition
@@ -970,7 +968,7 @@ snippet cdecomp
 # Polynomial Multiplication using FFT
 snippet pmultiply
 	template <typename T> 
-	vector<T> multiply(vector<T> const& a, vector<T> const& b) {
+	vector<T> multiply(vector<T> const& a, vector<T> const& b) { /* {{{ */
 		vector<T> fa(a.begin(), a.end()), fb(b.begin(), b.end());
 		int n = 1;
 		while (n < (int)a.size() + (int)b.size()) n <<= 1;
@@ -993,10 +991,49 @@ snippet pmultiply
 		ntt(fa, 1);
 
 		return fa;
-	}
+	} /* }}} */
+
 # Direction Vector
 snippet dir4
 	int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 snippet dir8
 	int dx[] = {-1, -1, 0, 1, 1, 1, 0, -1}, dy[] = {0, 1, 1, 1, 0, -1, -1, -1};
+# FFT 
+snippet fft 
+	using cd = complex<double>;
+	const double PI = acos(-1);
+
+	void fft(vector<cd> & a, bool invert) { /* {{{ */
+			int n = a.size();
+
+			for (int i = 1, j = 0; i < n; i++) {
+					int bit = n >> 1;
+					for (; j & bit; bit >>= 1)
+							j ^= bit;
+					j ^= bit;
+
+					if (i < j)
+							swap(a[i], a[j]);
+			}
+
+			for (int len = 2; len <= n; len <<= 1) {
+					double ang = 2 * PI / len * (invert ? -1 : 1);
+					cd wlen(cos(ang), sin(ang));
+					for (int i = 0; i < n; i += len) {
+							cd w(1);
+							for (int j = 0; j < len / 2; j++) {
+									cd u = a[i+j], v = a[i+j+len/2] * w;
+									a[i+j] = u + v;
+									a[i+j+len/2] = u - v;
+									w *= wlen;
+							}
+					}
+			}
+
+			if (invert) {
+					for (cd & x : a)
+							x /= n;
+			}
+	} /* }}} */
+
 #
