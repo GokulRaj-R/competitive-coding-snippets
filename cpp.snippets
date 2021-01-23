@@ -451,7 +451,7 @@ snippet matrix
 		for (int i = 0; i < (int)A.size(); ++i) {
 			for (int j = 0; j < (int)B[0].size(); ++j) {
 				for (int k = 0; k < (int)A[0].size(); ++k) {
-					ret[i][j] = (ret[i][j] + A[i][k] * B[k][j] % M) % M;
+					ret[i][j] = ret[i][j] + A[i][k] * B[k][j];
 				}  
 			}
 		}
@@ -992,7 +992,6 @@ snippet pmultiply
 
 		return fa;
 	} /* }}} */
-
 # Direction Vector
 snippet dir4
 	int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
@@ -1036,4 +1035,10 @@ snippet fft
 			}
 	} /* }}} */
 
+# File Input/Output
+snippet fread
+	#ifndef LOCAL
+	freopen("${1}", "r", stdin);
+	freopen("${2}", "w", stdout);
+	#endif
 #
