@@ -5,7 +5,6 @@ snippet temp
 
 	int main() {
 		ios::sync_with_stdio(0);
-		cout.tie(0);
 		cin.tie(0);
 
 		${0}
@@ -119,7 +118,7 @@ snippet dinic
 			
 			dinic() {}
 			
-			dinic(int n, int s, int t, bool scaling = false) : n(n), s(s), t(t), scaling(scaling) {
+			dinic(int _n, int _s, int _t, bool _scaling = false) : n(_n), s(_s), t(_t), scaling(_scaling) {
 					g.resize(n);
 					d.resize(n);
 					lst.resize(n);
@@ -131,24 +130,24 @@ snippet dinic
 					g[u].push_back({v, int(g[v].size()) - 1, directed ? 0 : cap, 0});
 			}
 
-			T dfs(int v, T flow) {
+			T dfs(int v, T cflow) {
 					if (v == t)
-							return flow;
-					if (flow == 0)
+							return cflow;
+					if (cflow == 0)
 							return 0;
 					T result = 0;
 					for (; lst[v] < (int)g[v].size(); ++lst[v]) {
 							edge& e = g[v][lst[v]];
 							if (d[e.u] != d[v] + 1)
 									continue;
-							T add = dfs(e.u, min(flow, e.cap - e.flow));
+							T add = dfs(e.u, min(cflow, e.cap - e.flow));
 							if (add > 0) {
 									result += add;
-									flow -= add;
+									cflow -= add;
 									e.flow += add;
 									g[e.u][e.rev].flow -= add;
 							}
-							if (flow == 0)
+							if (cflow == 0)
 									break;
 					}
 					return result;
@@ -886,7 +885,7 @@ snippet fhwt
 	}
 # Debug
 snippet debug
-	#ifdef LOCAL 
+	#ifdef GLOCAL 
 	#include "e:/Codes/lib/prettyprint.hpp"
 	#else
 	#define debug(...) 
@@ -965,33 +964,6 @@ snippet cdecomp
 			if (!done[v]) decompose(v);
 		}
 	}
-# Polynomial Multiplication using FFT
-snippet pmultiply
-	template <typename T> 
-	vector<T> multiply(vector<T> const& a, vector<T> const& b) { /* {{{ */
-		vector<T> fa(a.begin(), a.end()), fb(b.begin(), b.end());
-		int n = 1;
-		while (n < (int)a.size() + (int)b.size()) n <<= 1;
-		
-		if ((int)min(a.size(), b.size()) < 150) {
-			vector<T> ret(n, 0);
-			for (int i = 0; i < (int)a.size(); ++i) {
-				for (int j = 0; j < (int)b.size(); ++j) {
-					ret[i+j] += a[i] * b[j];
-				}
-			}
-			return ret;
-		}
-
-		fa.resize(n, 0);
-		fb.resize(n, 0);
-		ntt(fa, 0);
-		ntt(fb, 0);
-		for (int i = 0; i < n; ++i) fa[i] *= fb[i];
-		ntt(fa, 1);
-
-		return fa;
-	} /* }}} */
 # Direction Vector
 snippet dir4
 	int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
@@ -1037,8 +1009,37 @@ snippet fft
 
 # File Input/Output
 snippet fread
-	#ifndef LOCAL
-	freopen("${1}", "r", stdin);
-	freopen("${2}", "w", stdout);
+	#ifndef GLOCAL
+	freopen("${2}", "r", stdin);
+	freopen("${1}", "w", stdout);
 	#endif
-#
+# Set Precision (15)
+snippet sprec
+	cout << fixed << setprecision(15);
+# Polynomial Multiplication using FFT
+snippet pmultiply
+	template <typename T>
+	vector<T> multiply(vector<T> const& a, vector<T> const& b) { /* {{{ */
+		vector<T> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+		int n = 1;
+		while (n < (int)a.size() + (int)b.size()) n <<= 1;
+		
+		if ((int)min(a.size(), b.size()) < 150) {
+			vector<T> ret(n, 0);
+			for (int i = 0; i < (int)a.size(); ++i) {
+				for (int j = 0; j < (int)b.size(); ++j) {
+					ret[i+j] += a[i] * b[j];
+				}
+			}
+			return ret;
+		}
+
+		fa.resize(n, 0);
+		fb.resize(n, 0);
+		ntt(fa, 0);
+		ntt(fb, 0);
+		for (int i = 0; i < n; ++i) fa[i] *= fb[i];
+		ntt(fa, 1);
+
+		return fa;
+	} /* }}} */
