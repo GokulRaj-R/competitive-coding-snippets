@@ -1043,3 +1043,32 @@ snippet pmultiply
 
 		return fa;
 	} /* }}} */
+# Topological Sort
+snippet topsort
+	bool tcycle = 0;
+	vector<int> tvis;
+
+	void tdfs(int x, vector<int>& ord) { /* {{{ */
+		if (tcycle) return ;
+		tvis[x] = 2;
+		for (auto v : g[x]) {
+			if (tvis[v] == 2) tcycle = 1;
+			else if (!tvis[v]) tdfs(v, ord);
+		}
+		tvis[x] = 1;
+		ord.push_back(x);
+	}
+		
+	vector<int> tsort() {
+		vector<int> ord;
+		tvis.resize(g.size());
+		for (int i = 0; i < (int)g.size(); ++i) {
+			if (!tvis[i] && !tcycle) {
+				tdfs(i, ord);
+			}
+		}
+
+		if (!tcycle) return ord;
+		return vector<int> ();
+	} /* }}} */
+
