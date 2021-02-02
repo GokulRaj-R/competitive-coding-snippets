@@ -1096,7 +1096,6 @@ snippet dia
 	}
 # Euler Totient Function
 snippet phifunc
-	// Source : https://cp-algorithms.com/algebra/phi-function.html
 	vector<int> phi_1_to_n(int n) {
 		vector<int> phi(n + 1);
 		phi[0] = 0;
@@ -1125,7 +1124,7 @@ snippet sieve
 		}
 	}
 
-# Get all primes till N
+# Get Primes till N
 snippet getprimes
 	vector<int> pr, lp;
 	void initprimes(int pn) {
@@ -1139,4 +1138,13 @@ snippet getprimes
 				lp[i * pr[j]] = pr[j];
 		}
 	}
+
+# Local Compilation flag
+snippet gflag
+	#ifdef GLOCAL 
+		${1}	
+	#else
+		${2}
+	#endif
+
 
