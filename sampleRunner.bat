@@ -11,7 +11,11 @@ set "green=%ESCchar%[32m"
 set "black=%ESCchar%[90m"
 
 for %%f in (%1*.in) do (
-  if [%2] == [-s] type %%f
+  if [%2] == [-s] (
+    echo %black%Input: %white%%%f
+    echo.
+    type %%f
+  ) 
   echo %green%
   CMDTimer %1 < %%f
   echo %red%================================%white%
