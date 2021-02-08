@@ -1,0 +1,19 @@
+# Stress Testing
+snippet stresst
+	@echo off
+
+	set i = 0
+	:loop
+		_gen %i% > in
+			< in > sol-out
+		_brute < in > brute-out
+
+		fc sol-out brute-out
+		if errorlevel 1 goto fail
+
+		echo Ok
+		set /a i = %i%+1
+		goto loop
+
+	:fail
+		echo Wrong Answer!!!

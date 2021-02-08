@@ -15,10 +15,31 @@ for %%f in (%1*.in) do (
     echo %black%Input: %white%%%f
     echo.
     type %%f
-  ) 
-  echo %green%
-  CMDTimer %1 < %%f
-  echo %red%================================%white%
+  )
+  if exist %%~nf.out (
+    call CMDTimer "%1 < %%f > temp.out" ExecTime
+    fc /a /n %%~nf.out temp.out > fctemp && (
+      echo %green%
+      if [%2] == [-s] (
+        type %%~nf.out
+        echo.
+      )	
+      echo Accepted^^! 
+    ) || (
+     echo.
+     type fctemp
+     echo %red%Wrong Answer^^!^^!^^!
+    )
+    echo.
+    echo %black%Execution time : %white%!ExecTime!
+    echo %red%================================%white%
+  ) else ( 
+    echo %green%
+    call CMDTimer "%1 < %%f" ExecTime
+    echo.
+    echo %black%Execution time : %white%!ExecTime!
+    echo %red%================================%white%
+  )
   echo off
 )
 

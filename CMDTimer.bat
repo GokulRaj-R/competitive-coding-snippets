@@ -4,14 +4,14 @@ setlocal EnableDelayedExpansion
 for /F "delims=#" %%E in ('"prompt #$E# & for %%E in (1) do rem"') do set "ESCchar=%%E"
 set "yellow=%ESCchar%[93m"
 set "white=%ESCchar%[97m"
-set "cream=%ESCchar%[90m"
+set "black=%ESCchar%[90m"
 set "blue=%ESCchar%[36m"
 set "magenta=%ESCchar%[35m"
 set "green=%ESCchar%[32m"
 set start=%time%
 
 :: Runs your command
-cmd /c %*
+cmd /c %~1
 
 set end=%time%
 set options="tokens=1-4 delims=:.,"
@@ -30,5 +30,11 @@ if 1%ms% lss 100 set ms=0%ms%
 
 :: Mission accomplished
 set /a totalsecs = %hours%*3600 + %mins%*60 + %secs%
-echo.
-echo %cream%Execution time : %white%%totalsecs%.%ms%s
+:: echo.
+:: echo %cream%Execution time : %white%%totalsecs%.%ms%s
+if [%~2] == [] (
+  echo %black%Execution time : %white%%totalsecs%.%ms%s
+) else (
+  endlocal 
+  set %~2=%totalsecs%.%ms%s
+)
