@@ -1146,5 +1146,22 @@ snippet gflag
 	#else
 		${2}
 	#endif
+# Floor Sum (A * i + B) / M
+snippet floorsum
+	long long floor_sum(long long n, long long m, long long a, long long b) {
+		long long ret = 0;
+		if (a >= m) {
+			ret += n * (n - 1) * (a / m) / 2;
+			a %= m;
+		}
 
+		if (b >= m) {
+			ret += n * (b / m);
+			b %= m;
+		}
+		
+		long long last = a * n + b;
+		if (last >= m) ret += floor_sum(last / m, a, m, last % m);
+		return ret;
+	}
 
