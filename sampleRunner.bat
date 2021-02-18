@@ -10,7 +10,7 @@ set "magenta=%ESCchar%[35m"
 set "green=%ESCchar%[32m"
 set "black=%ESCchar%[90m"
 
-for %%f in (%1*.in) do (
+for %%f in (%1_*.in) do (
   if [%2] == [-s] (
     echo %black%Input: %white%%%f
     echo.
