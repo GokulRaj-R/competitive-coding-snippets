@@ -11,7 +11,7 @@ snippet temp
 	}
 # Aho Corasick
 snippet ahoc
-	struct ahoc { /* {{{ */
+	struct Ahoc { /* {{{ */
 		int sz = 0;
 		vector<int> len, sl, el;
 		vector<vector<int>> to;
@@ -101,7 +101,7 @@ snippet dstra
 # Dinic Flow Algortihm
 snippet dinic
 	template<typename T>
-	struct dinic { /* {{{ */
+	struct Dinic { /* {{{ */
 			struct edge {
 					int u, rev;
 					T cap, flow;
@@ -116,9 +116,9 @@ snippet dinic
 			T scaling_lim;
 			bool scaling;
 			
-			dinic() {}
+			Dinic() {}
 			
-			dinic(int _n, int _s, int _t, bool _scaling = false) : n(_n), s(_s), t(_t), scaling(_scaling) {
+			Dinic(int _n, int _s, int _t, bool _scaling = false) : n(_n), s(_s), t(_t), scaling(_scaling) {
 					g.resize(n);
 					d.resize(n);
 					lst.resize(n);
@@ -232,11 +232,11 @@ snippet dlog
 
 # Disjoint Set Union
 snippet dsu
-	struct dsu { /* {{{ */
+	struct Dsu { /* {{{ */
 		int N;
 		vector<int> par, sz;
 
-		dsu(int n) : N(n + 5) {
+		Dsu(int _n) : N(_n) {
 			par.resize(N);
 			sz.assign(N, 1);
 			iota(par.begin(), par.end(), 0);
@@ -248,8 +248,8 @@ snippet dsu
 		}
 
 		void join(int x, int y) {
-			int px = root(x) , py = root(y);
-			if (px == py) return ;
+			int px = root(x), py = root(y);
+			if (px == py) return;
 			if (sz[px] < sz[py])
 				swap(px, py);
 
@@ -260,26 +260,18 @@ snippet dsu
 
 # Fenwick Tree
 snippet ftree
-	struct ftree { /* {{{ */
+	struct Ftree { /* {{{ */
 		vector<int> bit;
-		ftree (int _n) {
-			bit.assign(_n + 5, 0);
-		}
+		Ftree (int _n) { bit.assign(_n + 1, 0); }
 
 		void update(int x, int val) {
-			++x;
-			while (x < (int)bit.size()) {
+			for (++x; x < (int)bit.size(); x += x&-x) 
 				bit[x] += val;
-				x += x&-x;
-			}
 		}
 
 		int query(int x) {
-			int ret=0; ++x;
-			while (x > 0) {
-				ret += bit[x];
-				x -= x&-x;
-			}
+			int ret = 0;
+			for (++x; x > 0; x -= x&-x) ret += bit[x];
 			return ret;
 		}
 	}; /* }}} */
@@ -560,25 +552,26 @@ snippet rangen
 # Segment Tree
 snippet segtree
 	template <typename T>
-	struct segtree { /* {{{ */
+	struct Segtree { /* {{{ */
 		int N;
 		vector<T> seg, lazy;
-		segtree(int n = 1e5) : N(n) {
-			seg.resize(4*N, 0);
-			lazy.resize(4*N, 0);
+		Segtree(int _n) : N(_n) {
+			seg.resize(4 * N, 0);
+			lazy.resize(4 * N, 0);
 		}
 
 		T join(T x, T y) {
-
 			return x + y;
 		}
 
-		void lazy_update(int x, int s, int e) {
-			if (!lazy[x])	return ;
+		void push(int x, int s, int e) {
+			if (!lazy[x])	return;
 			seg[x] += lazy[x];
 
-			if (s != e)
-				lazy[2*x] += lazy[x], lazy[2*x+1] += lazy[x];
+			if (s != e) {
+				lazy[2 * x] += lazy[x];
+				lazy[2 * x + 1] += lazy[x];
+			}
 			lazy[x] = 0;
 		}
 
@@ -592,16 +585,16 @@ snippet segtree
 			build(2 * x, s, mid);
 			build(2 * x + 1, mid + 1, e);
 
-			seg[x] = join(seg[2*x], seg[2*x+1]);
+			seg[x] = join(seg[2 * x], seg[2* x + 1]);
 		}
 
 		void update(int x, int s, int e, int l, int r, T val) {
-			lazy_update(x, s, e);
+			push(x, s, e);
 			if (s > r || e < l)	return ;
 
 			if (s >= l && e <= r) {
 				lazy[x] += val;
-				lazy_update(x, s, e);
+				push(x, s, e);
 				return;
 			}
 
@@ -623,8 +616,8 @@ snippet segtree
 			return join(query(2 * x, s, mid, l, r), query(2 * x + 1, mid + 1, e, l, r));
 		}
 
-		void update(int l, int r, T val) { update(1, 0, N-1, l, r, val); }
-		T query(int l, int r) { return query(1, 0, N-1, l, r); }
+		void update(int l, int r, T val) { update(1, 0, N - 1, l, r, val); }
+		T query(int l, int r) { return query(1, 0, N - 1, l, r); }
 	}; /* }}} */
 
 # Testcases Case #i : answer
@@ -778,11 +771,11 @@ snippet stresst
 		echo Wrong Answer!!!
 # String Hashs
 snippet hasher
-	struct hasher {
+	struct Hasher {
 		int P, MOD;
 		vector<int> hashs, pows;
 
-		hasher(vector<int> &s, int P, int MOD) : P(P), MOD(MOD) {
+		Hasher(vector<int> &s, int P, int MOD) : P(P), MOD(MOD) {
 			int n = s.size();
 			pows.resize(n + 1, 0);
 			hashs.resize(n + 1, 0);
@@ -885,7 +878,7 @@ snippet fhwt
 	}
 # Debug
 snippet debug
-	#ifdef GLOCAL 
+	#ifdef GLOCAL
 	#include "e:/Codes/lib/prettyprint.hpp"
 	#else
 	#define debug(...) 
