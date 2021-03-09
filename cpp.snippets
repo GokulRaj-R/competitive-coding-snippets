@@ -606,7 +606,7 @@ snippet segtree
 		}
 
 		T query(int x, int s, int e, int l, int r) {
-			lazy_update(x, s, e);
+			push(x, s, e);
 			if (e < l || s > r)	return 0;
 			if (s >= l && e <= r){
 				return seg[x];
