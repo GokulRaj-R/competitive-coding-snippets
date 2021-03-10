@@ -260,17 +260,18 @@ snippet dsu
 
 # Fenwick Tree
 snippet ftree
+	template <typename T>
 	struct Ftree { /* {{{ */
-		vector<int> bit;
-		Ftree (int _n) { bit.assign(_n + 1, 0); }
+		vector<T> bit;
+		Ftree(int _n) { bit.assign(_n + 1, 0); }
 
-		void update(int x, int val) {
+		void update(int x, T val) {
 			for (++x; x < (int)bit.size(); x += x&-x) 
 				bit[x] += val;
 		}
 
-		int query(int x) {
-			int ret = 0;
+		T query(int x) {
+			T ret = 0;
 			for (++x; x > 0; x -= x&-x) ret += bit[x];
 			return ret;
 		}
@@ -1157,4 +1158,45 @@ snippet floorsum
 		if (last >= m) ret += floor_sum(last / m, a, m, last % m);
 		return ret;
 	}
+# Extended Euclidean Algortihm
+snippet exgcd
+	ll exgcd(ll a, ll b, ll& x, ll& y) {
+		if (!b) {
+			x = 1; y = 0;
+			return a;
+		}
+
+		ll x1, y1;
+		ll g = exgcd(b, a % b, x1, y1);
+		x = y1; y = x1 - y1 * (a / b);
+		return g;
+	}
+
+# Chinese Reminder Theorem
+snippet crt
+	pair<long long, long long> crt(vector<long long> r, vector<long long> m) { /* {{{ */
+		long long r0 = r[0], m0 = m[0];
+		for (int i = 1; i < (int)r.size(); ++i) {
+			if (m[i] > m0) {
+				swap(m[i], m0);
+				swap(r[i], r0);
+			}
+
+			if (m0 % m[i] == 0) {
+				if (r0 % m[i] == r[i]) continue;
+				return {-1, 0};
+			}
+
+			long long x, y, g;
+			g = exgcd(m0, m[i], x, y);
+			if ((r[i] - r0) % g) return {-1, 0};
+
+			long long mg = m[i] / g;
+			r0 += (r[i] - r0) / g % mg * x % mg * m0;
+			m0 *= mg;
+
+			if (r0 < 0) r0 += m0;
+		}
+		return {r0, m0}; 
+	} /* }}} */
 
