@@ -565,18 +565,17 @@ snippet segtree
 			lazy.resize(4 * N, 0);
 		}
 
-		T join(T x, T y) {
+		T combine(T x, T y) {
 			return x + y;
 		}
 
 		void push(int x, int s, int e) {
-			if (!lazy[x])	return;
-			seg[x] += lazy[x];
+			seg[2 * x] += lazy[x];
+			lazy[2 * x] += lazy[x];
 
-			if (s != e) {
-				lazy[2 * x] += lazy[x];
-				lazy[2 * x + 1] += lazy[x];
-			}
+			seg[2 * x + 1] += lazy[x];
+			lazy[2 * x + 1] += lazy[x];
+
 			lazy[x] = 0;
 		}
 
@@ -590,35 +589,34 @@ snippet segtree
 			build(2 * x, s, mid);
 			build(2 * x + 1, mid + 1, e);
 
-			seg[x] = join(seg[2 * x], seg[2* x + 1]);
+			seg[x] = combine(seg[2 * x], seg[2* x + 1]);
 		}
 
 		void update(int x, int s, int e, int l, int r, T val) {
-			push(x, s, e);
-			if (s > r || e < l)	return ;
-
-			if (s >= l && e <= r) {
+			if (s > r || e < l)	return;
+			if (l <= s && e <= r) {
+				seg[x] += val;
 				lazy[x] += val;
-				push(x, s, e);
 				return;
 			}
 
+			push(x, s, e);
 			int mid = (s + e) >> 1;
 			update(2 * x, s, mid, l, r, val);
 			update(2 * x + 1, mid + 1, e, l, r, val);
 
-			seg[x] = join(seg[2 * x], seg[2 * x + 1]);
+			seg[x] = combine(seg[2 * x], seg[2 * x + 1]);
 		}
 
 		T query(int x, int s, int e, int l, int r) {
-			push(x, s, e);
 			if (e < l || s > r)	return 0;
-			if (s >= l && e <= r){
+			if (l <= s && e <= r) {
 				return seg[x];
 			}
 
+			push(x, s, e);
 			int mid = (s + e) >> 1;
-			return join(query(2 * x, s, mid, l, r), query(2 * x + 1, mid + 1, e, l, r));
+			return combine(query(2 * x, s, mid, l, r), query(2 * x + 1, mid + 1, e, l, r));
 		}
 
 		void update(int l, int r, T val) { update(1, 0, N - 1, l, r, val); }
