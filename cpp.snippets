@@ -9,6 +9,7 @@ snippet temp
 
 		${0}
 	}
+
 # Aho Corasick
 snippet ahoc
 	struct Ahoc { /* {{{ */
@@ -72,7 +73,7 @@ snippet custom_hash
 snippet dstra
 	using pli = pair<long long, int>;
 	long long dijkstra(vector<long long> &dt, int src = 0, int dest = -1) { /* {{{ */
-		
+
 		dt.assign(g.size(), 1e17);
 		dt[src] = 0;
 
@@ -106,18 +107,18 @@ snippet dinic
 					int u, rev;
 					T cap, flow;
 			};
-			
+
 			int n, s, t;
 			T flow;
 			vector<int> lst;
 			vector<int> d;
 			vector<vector<edge>> g;
-			
+
 			T scaling_lim;
 			bool scaling;
-			
+
 			Dinic() {}
-			
+
 			Dinic(int _n, int _s, int _t, bool _scaling = false) : n(_n), s(_s), t(_t), scaling(_scaling) {
 					g.resize(n);
 					d.resize(n);
@@ -181,7 +182,7 @@ snippet dinic
 					}   
 					return flow;
 			}
-			
+
 			vector<bool> min_cut() {
 					vector<bool> res(n);
 					for(int i = 0; i < n; i++) 
@@ -283,10 +284,10 @@ snippet fibonacci
 	long long fib(long long n) { 
 			if (n == 0) return 0; 
 			if (n == 1 || n == 2) return (fmap[n] = 1); 
-		
+
 			if (fmap.count(n))   return fmap[n];
 			long long k = (n + 1) / 2; 
-		
+
 			// Take mod if required
 			fmap[n] = (n & 1) ? (fib(k) * fib(k) + fib(k-1) * fib(k-1)) 
 						 : (2 * fib(k-1) + fib(k)) * fib(k); 
@@ -382,7 +383,7 @@ snippet lca
 					return query(1, 0, euler.size() - 1, left, right);
 			}
 	}; /* }}} */
-		
+
 # LCA Binary
 snippet lcabinary
 	int n, l;
@@ -521,6 +522,7 @@ snippet pbds
 		3)order_of_key(x) return no of elems less than x
 		4)erase(number)
 	*/
+
 # Binary Exponentiation
 snippet pwr
 	long long pwr(long long a, long long b, long long m = M) {
@@ -627,18 +629,20 @@ snippet segtree
 snippet tcase
 	int tc;
 	cin >> tc;
-		
+
 	for (int ii = 1; ii <= tc; ++ii) {
 		cout << "Case #" << ii <<  ": ";
-	
+
 		${1}
 
 	}
+
 # Time Taken
 snippet cstime
 	double start = clock();
 snippet cetime
 	cerr << "\nTime Taken : " << ((double)clock() - start) / CLOCKS_PER_SEC << '\n';
+
 # TestCases
 snippet tint
 	int tc;
@@ -647,6 +651,7 @@ snippet tint
 	while (tc--) {
 		${0}
 	}
+
 # 2 Sat
 snippet 2sat
 	vector<vector<int>> g, gt;
@@ -686,6 +691,7 @@ snippet 2sat
 		}
 		return ret;
 	}
+
 # Suffix Array
 snippet sarray
 	void suffix_array(string &s, vector<int> &p, vector<int> &c) { /* {{{ */
@@ -698,11 +704,11 @@ snippet sarray
 		sort(p.begin(), p.end(), [&](int i, int j) {
 				return s[i] < s[j];
 		});
-		
+
 		for (int i = 1; i < n; ++i) {
 			c[p[i]] = c[p[i-1]] + (s[p[i]] != s[p[i-1]]);
 		}
-		
+
 		auto count_sort = [&](vector<int> &p, vector<int> &c) {
 			vector<int> pos(n, 0), pn(n);
 			for (auto i : c) pos[i]++;
@@ -710,7 +716,7 @@ snippet sarray
 			for (int i = 1; i < n; ++i) pos[i] += pos[i - 1];
 			for (int i = n - 1; i >= 0; --i) p[--pos[c[pn[i]]]] = pn[i];
 		};
-		
+
 		while ((1<<k) < n) {
 			count_sort(p, c);
 			cn[p[0]] = 0;
@@ -723,6 +729,7 @@ snippet sarray
 			if (c[p.back()] == n - 1) break;
 		}
 	} /* }}} */
+
 # LCP
 snippet lcp
 	int n = s.size(), l = ceil(log2(n));
@@ -744,6 +751,7 @@ snippet lcp
 		int len = log2(j - i + 1);
 		return min(lcp[i][len], lcp[j - (1<<len) + 1][len]);
 	};
+
 # Type define long long as ll
 snippet tll
 	typedef long long ll;
@@ -772,6 +780,16 @@ snippet stresst
 
 	:fail
 		echo Wrong Answer!!!
+
+# Stress Test Linux
+snippet ltest
+	#!/bin/bash
+	for((i = 1; ; ++i)); do
+		echo $i
+		./gen $i > int
+		diff -w <(./pr < int) <(./gr < int) || break
+	done
+
 # String Hashs
 snippet hasher
 	struct Hasher {
@@ -797,6 +815,7 @@ snippet hasher
 			return ans;
 		}
 	};
+
 # Modular inverse
 snippet inverse
 	int inverse(int a, int b = M) {
@@ -850,7 +869,7 @@ snippet modfac
 		if (_r < 0 || _r > _n) return 0;
 		return fac[_n] * inv[_r] * inv[_n-_r];
 	}
-	
+
 	mint npr(int _n, int _r) {
 		if (_r < 0 || _r > _n) return 0;
 		return fac[_n] * inv[_n-_r];
@@ -865,7 +884,7 @@ snippet fhwt
 			for (int i = 0; i < n; i += 2*len) {
 				for (int j = 0; j < len; ++j) {
 					T u = a[i+j], v = a[i+j+len]; 
-					
+
 					if (!inv) {
 						a[i+j] = u + v; a[i+j+len] = u - v; // XOR
 						a[i+j] = v; a[i+j+len] = u + v; // AND
@@ -879,20 +898,22 @@ snippet fhwt
 			}
 		}
 	}
+
 # Debug
 snippet debug
 	#ifdef GLOCAL
-	#include "e:/Codes/lib/prettyprint.hpp"
+	#include "/home/gokul/prettyprint.hpp"
 	#else
 	#define debug(...) 
 	#endif
+
 # Dynamic modular class
 snippet dmodular 
 	vector<int> MODS = {int(1e9+7), 998244353};
 	template <int id>
 	struct Modular { /* {{{ */
 		int value;
-		
+
 		static int MOD() {return MODS[id];}
 		Modular(long long v = 0) { value = v % MOD(); if (value < 0) value += MOD();}
 		Modular(long long a, long long b) : value(0) { *this += a; *this /= b;}
@@ -960,6 +981,7 @@ snippet cdecomp
 			if (!done[v]) decompose(v);
 		}
 	}
+
 # Direction Vector
 snippet dir4
 	int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
@@ -1019,7 +1041,7 @@ snippet pmultiply
 		vector<T> fa(a.begin(), a.end()), fb(b.begin(), b.end());
 		int n = 1;
 		while (n < (int)a.size() + (int)b.size()) n <<= 1;
-		
+
 		if ((int)min(a.size(), b.size()) < 150) {
 			vector<T> ret(n, 0);
 			for (int i = 0; i < (int)a.size(); ++i) {
@@ -1039,6 +1061,7 @@ snippet pmultiply
 
 		return fa;
 	} /* }}} */
+
 # Topological Sort
 snippet topsort
 	bool tcycle = 0;
@@ -1054,7 +1077,7 @@ snippet topsort
 		tvis[x] = 1;
 		ord.push_back(x);
 	}
-		
+
 	vector<int> tsort() {
 		vector<int> ord;
 		tvis.resize(g.size());
@@ -1067,6 +1090,7 @@ snippet topsort
 		if (!tcycle) return ord;
 		return vector<int> ();
 	} /* }}} */
+
 # Tree diameter
 snippet dia
 	void getdepth(int x, int &r, vector<int>& ddep, vector<int>& dpar) {
@@ -1084,12 +1108,13 @@ snippet dia
 		vector<int> ddep(g.size()), dpar(g.size());
 		dpar[v] = v; getdepth(v, v, ddep, dpar);
 		dpar[v] = v; getdepth(v, v, ddep, dpar);
-		
+
 		vector<int> ret(1, v);
 		for (int i = v; i != dpar[i]; i = dpar[i]) 
 			ret.push_back(dpar[i]);
 		return ret;
 	}
+
 # Euler Totient Function
 snippet phifunc
 	vector<int> phi_1_to_n(int n) {
@@ -1142,6 +1167,7 @@ snippet gflag
 	#else
 		${2}
 	#endif
+
 # Floor Sum (A * i + B) / M
 snippet floorsum
 	long long floor_sum(long long n, long long m, long long a, long long b) {
@@ -1155,11 +1181,12 @@ snippet floorsum
 			ret += n * (b / m);
 			b %= m;
 		}
-		
+
 		long long last = a * n + b;
 		if (last >= m) ret += floor_sum(last / m, a, m, last % m);
 		return ret;
 	}
+
 # Extended Euclidean Algortihm
 snippet exgcd
 	ll exgcd(ll a, ll b, ll& x, ll& y) {
@@ -1202,3 +1229,18 @@ snippet crt
 		return {r0, m0}; 
 	} /* }}} */
 
+# Z function
+snippet zfunc
+	vector<int> z_function(string s) {
+		int n = (int)s.length();
+		vector<int> z(n);
+		for (int i = 1, l = 0, r = 0; i < n; ++i) {
+			if (i <= r)
+				z[i] = min(r - i + 1, z[i - l]);
+			while (i + z[i] < n && s[z[i]] == s[i + z[i]])
+				++z[i];
+			if (i + z[i] - 1 > r)
+				l = i, r = i + z[i] - 1;
+		}
+		return z;
+	}
