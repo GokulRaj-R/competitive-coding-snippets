@@ -20,16 +20,19 @@ for %%f in (%1_*.in) do (
     call CMDTimer "%1 < %%f > temp.out" ExecTime
     fc /a /n /w %%~nf.out temp.out > fctemp && (
       echo %green%
-      if [%2] == [-s] (
-        type %%~nf.out
-        echo.
-      )	
+      type %%~nf.out
+      echo.
       echo Accepted^^! 
     ) || (
      echo.
      type fctemp
+     type %%~nf.out
+     echo.
+     type temp.out
+     echo.
      echo %red%Wrong Answer^^!^^!^^!
     )
+    del temp.out fctemp
     echo.
     echo %black%Execution time : %white%!ExecTime!
     echo %red%================================%white%
@@ -42,4 +45,3 @@ for %%f in (%1_*.in) do (
   )
   echo off
 )
-
